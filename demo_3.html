@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			.type{
+				display: inline-block;
+				width: 150px;
+				height: 40px;
+				color:#FFFFFF;
+				font-size: 30px;
+				text-align: center;
+				background: #000000;
+				line-height: 40px;
+				text-decoration: none;
+				margin: 5px 5px;
+			}
+			.play{
+				width: 100px;
+				height: 30px;
+				line-height: 30px;
+				color: #FFFFFF;
+				background: #000000;
+				font-size: 30px;
+				display: inline-block;
+				text-decoration: none;
+				text-align: center;
+			}
+			.current{
+				outline: 3px solid gold;
+			}
+			input[type="range"]{
+				width: 500px;
+			}
+		</style>
+	</head>
+	<body>
+		<a href="javascript:;" class="play start">播放</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:;" class="play stop current">停止</a>
+		<table border="" cellspacing="0" cellpadding="0" style="margin-top: 20px;">
+			<tr>
+				<th>type:</th>
+				<td>
+					<a href="javascript:;" class="type sine current">sine</a>
+					<a href="javascript:;" class="type square">square</a>
+					<a href="javascript:;" class="type sawtooth">sawtooth</a>
+					<a href="javascript:;" class="type triangle">triangle</a>
+				</td>
+			</tr>	
+			<tr>
+				<th>frequency:</th>
+				<td>
+					<input type="range" name="frequency" id="frequency" value="440" max="1000"/>&nbsp;&nbsp;<span class="test"></span>
+				</td>
+			</tr>
+			<tr>
+				<th>detune:</th>
+				<td>
+					<input type="range" name="detune" id="detune" value="440" max="1000"/>&nbsp;&nbsp;<span class="test"></span>
+				</td>
+			</tr>
+			<tr>
+				<th>volume:</th>
+				<td>
+					<input type="range" name="volume" id="volume" value="1" max="2" step="0.1"/>&nbsp;&nbsp;<span class="test"></span>
+				</td>
+			</tr>
+		</table>
+	</body>
+	<script src="js/jquery-1.10.2.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		$(function(){
+			$("input").each(function(){
+				var str=$(this).val();
+				$(this).next("span").html(str);
+				$(this).on("input",function(){
+					var str=$(this).val();
+					$(this).next("span").html(str);
+					var type=$(".type.current").text();
+					var frequency=$("#frequency").val();
+					var detune=$("#detune").val();
+					var volume=$("#volume").val();
+					context_para(type,frequency,detune,volume);
+				})
+			})
+			
+			$(".type").click(function(){
+				$(".type").removeClass("current");
+				$(this).addClass("current");
+				var type=$(".type.current").text();
+				var frequency=$("#frequency").val();
+				var detune=$("#detune").val();
+				var volume=$("#volume").val();
+				context_para(type,frequency,detune,volume);
+			})
+			
+			$(".play").click(function(){
+				$(".play").removeClass("current");
+				$(this).addClass("current");
+			})
+			
+			$(".start").click(function(){
+				var type=$(".type.current").text();
+				var frequency=$("#frequency").val();
+				var detune=$("#detune").val();
+				var volume=$("#volume").val();
+				context_para(type,frequency,detune,volume);
+				gainNode.connect(context.destination);
+			})
+			
+			$(".stop").click(function(){
+				 gainNode.disconnect(context.destination);
+			})
+			//音频相关函数
+			var AudioContext=AudioContext||webkitAudioContext;
+			var context=new AudioContext;
+			var oscillator=context.createOscillator();
+			gainNode = context.createGain();  // 創建 gainNode,用处是改变声音的一些信息，这里是改变了音量大小，其实不使用gainNode,音频二也能播放
+			gainNode.gain.value =$("#volume").val();  
+			oscillator.connect(gainNode); 
+			oscillator.start(0);
+			
+			function context_para(para1,para2,para3,para4){//音频相关函数，需要参数1:播放类型type，2：振荡频率frequency,3:音高偏移微調detune;音量大小:volume
+				oscillator.type=para1;
+				oscillator.frequency.value=para2;
+				oscillator.detune.value=para3;
+				gainNode.gain.value =para4;   
+			}
+		})
+	</script>
+</html>

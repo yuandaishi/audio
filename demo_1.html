@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+	</body>
+	<script src="js/jquery-1.10.2.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+//		var audio=new Audio();
+//		//console.log(audio);
+		var AudioContext = AudioContext || webkitAudioContext;
+		//console.log(AudioContext);
+		var context = new AudioContext;
+		var oscillator1 = context.createOscillator();
+		oscillator1.type = "square";//type選擇震盪的波形，波形共有五種 type，分別是 sine ( 正弦波 )、square ( 方波 )、sawtooth ( 鋸齒波 )、triangle ( 三角波 ) 和 custom ( 自訂 )，每種波形在同樣的頻率下，會產生不同的聲音。
+		oscillator1.frequency.value = 440;//震盪的頻率，在音樂裡面也稱作「音高」( 可以參考維基百科 )，頻率越高聲音就越高，基本預設的聲音頻率座落在 440 赫茲，因為任何樂器演奏中央 C 上的 A 音符基頻皆為 440 赫茲。
+		oscillator1.detune.value = -400;//音高偏移微調，將原音的音分做些微移調，造成重疊的音色效果，也就是雖然是同一個音，但經過 detune 偏移，就變成了不同的聲音。( 音分可以參考維基百科 )
+		oscillator1.connect(context.destination);//这个是干什么用的不清楚，看说明也看不懂，不写这句，不会发出声音
+		oscillator1.start(0);//开始播放时间，单位为秒
+		oscillator1.stop(2);//结束播放时间，单位为秒
+		oscillator1.onended = function(){alert('stop');};//播放结束后执行函数
+		
+		var oscillator2 = context.createOscillator();
+		oscillator2.type = "square";
+		oscillator2.frequency.value = 440;
+		oscillator2.detune.value = -300;
+		oscillator2.connect(context.destination);
+		oscillator2.start();
+		oscillator2.stop(2);
+		
+		var oscillator3 = context.createOscillator();
+		oscillator3.type = "square";
+		oscillator3.frequency.value = 440;
+		oscillator3.detune.value = 300;
+		oscillator3.connect(context.destination);
+		oscillator3.start();
+		oscillator3.stop(2);
+	</script>
+</html>

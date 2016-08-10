@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+	</body>
+	<script type="text/javascript">
+		var AudioContext=AudioContext||webkitAudioContext;//兼容性
+		var context=new AudioContext;
+		console.log(context.currentTime);
+		var oscillator1=context.createOscillator();
+		oscillator1.type="sine";
+		oscillator1.frequency.value=440;
+		oscillator1.detune.value=4000;
+		oscillator1.connect(context.destination);
+		oscillator1.start(0);
+		oscillator1.stop(2);
+		oscillator1.onended=function(){
+			console.log("end");
+//			setInterval(function(){
+//					console.log(context.currentTime);
+//			},1000)
+			//上面的例子用到了一個新的東西叫做currentTime，currentTime是從 AudioContext 建立的當下就會產生的時間，時間會不斷的進行直到我們將 AudioContext 移除，因此我們利用currentTime就可以確保聲音播放的時間，一定會在兩秒後或四秒後停止或播放。
+		}
+		
+		var oscillator2=context.createOscillator();
+		oscillator2.type="sawtooth";
+		oscillator2.frequency.value=440;
+		oscillator2.frequency.value-100;
+		gainNode = context.createGain();  // 創建 gainNode,用处是改变声音的一些信息，这里是改变了音量大小，其实不使用gainNode,音频二也能播放
+		gainNode.gain.value = 0.1;        // 設定音量
+		oscillator2.connect(gainNode);    // 將聲音連到 gainNode（音量变为0.2）
+		gainNode.connect(context.destination); // 播放 gainNode
+		oscillator2.start(2);
+		oscillator2.stop(4);
+	</script>
+</html>
