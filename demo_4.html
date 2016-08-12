@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+	</body>
+	<script src="js/jquery-1.10.2.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		var AudioContext=AudioContext||webkitAudioContext;
+		var context=new AudioContext;
+		var oscillator=context.createOscillator();
+		oscillator.frequency.value=440;
+		oscillator.type="square";
+		oscillator.detune.value=-440;
+		//控制音量
+		var gainNode=context.createGain();
+		gainNode.gain.value=0.1;
+		oscillator.connect(gainNode)
+		//
+		oscillator.start();
+		oscillator.stop(4);
+		//oscillator.connect(context.destination);
+		gainNode.connect(context.destination)
+		
+		//音量跳跃性增加setValueAtTime
+//		gainNode.gain.setValueAtTime(0.1,0)//设置不同时间点的音量大小，超出stop的时间范围，则静音
+//		gainNode.gain.setValueAtTime(0.5,1)
+//		gainNode.gain.setValueAtTime(1,2)
+//		gainNode.gain.setValueAtTime(2,3)
+//		gainNode.gain.setValueAtTime(3,4)
+
+		//音量渐变增加linearRampToValueAtTime
+//		gainNode.gain.linearRampToValueAtTime(0.1,0);
+//		gainNode.gain.linearRampToValueAtTime(0.5,1);
+//		gainNode.gain.linearRampToValueAtTime(1,2);
+//		gainNode.gain.linearRampToValueAtTime(2,3);
+//		gainNode.gain.linearRampToValueAtTime(3,4);
+		
+		//音量指数变换exponentialRampToValueAtTime，不能小于或者等于0；
+		gainNode.gain.exponentialRampToValueAtTime(0.1,0);
+		gainNode.gain.exponentialRampToValueAtTime(0.5,1);
+		gainNode.gain.exponentialRampToValueAtTime(1,2);
+		gainNode.gain.exponentialRampToValueAtTime(2,3);
+		gainNode.gain.exponentialRampToValueAtTime(3,4);
+	</script>
+</html>

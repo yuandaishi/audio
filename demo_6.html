@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#volume{
+				width: 300px;
+			}
+			.num{
+				vertical-align: text-bottom;
+				font-size: 20px;
+				color: goldenrod;
+			}
+			.button{
+				display: inline-block;
+				width: 150px;
+				height: 50px;
+				line-height: 50px;
+				text-decoration: none;
+				background: #333300;
+				color: #FFFFFF;
+				font-size: 25px;
+				text-align: center;
+			}
+			.current{
+				outline: 3px solid gold;
+			}
+			.box{
+				margin: 10px 0;
+			}
+			#pan{
+				width: 200px;
+			}
+			.prompt{
+				font-size: 20px;
+				vertical-align: text-bottom;
+			}
+		</style>
+	</head>
+	<body>
+		<a href="javascript:;" class="button play">播放</a>
+		<a href="javascript:;" class="button stop current">停止</a><br>
+		<div class="box">
+			<span class="prompt">左右声道</span>
+			<input type="range" name="pan" id="pan" value="0" step="0.1" min="-1" max="1"/>
+			<span class="voice"></span><br>
+			<span class="prompt">音量大小</span>
+			<input type="range" name="volume" id="volume" value=".5" max="1" step="0.00001"/>
+			<span class="num"></span>
+		</div>
+	</body>
+	<script src="js/jquery-1.10.2.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		
+		//获取外部音频
+		var audio=new Audio();
+		audio.src="test.mp3";
+		audio.addEventListener("loadedmetadata",function(){
+			audio.volume=0.5;
+			$(".play").click(function(){
+				audio.play();
+				gainNode.connect(context.destination);
+			})
+		
+			$(".stop").click(function(){
+				audio.pause();
+				gainNode.disconnect(context.destination);
+			})
+			
+			
+			var num=$("#volume").val();
+			$(".num").html(num);
+			$("#volume").on("input",function(){
+				var num=$("#volume").val();
+				$(".num").html(num);
+				audio.volume=num;
+			})
+			
+			var voice=$("#pan").val();
+			$(".voice").html(voice);
+				
+				$("#pan").on("input",function(){
+					var voice=$("#pan").val();
+					$(".voice").html(voice);
+					stereoPanner.pan.value=voice;
+				})
+			
+			$(".button").click(function(){
+				$(".button").removeClass("current");
+				$(this).addClass("current");
+			})
+			
+					//创建音频
+			var AudioContext=AudioContext||webkitAudioContext;
+			var context=new AudioContext;
+			//var oscillator=context.createOscillator();//创建音频。之后可以设置音频的波段等各种属性。在这里不用这种方法。
+			var audioCtx=context.createMediaElementSource(audio);//把我們的音樂轉成可以讓「節點」( AudioNode ) 使用的數位音頻。
+			var gainNode = context.createGain();
+			
+			//var processor = context.createScriptProcessor(4096, 1, 1);//這個方法目的在建立一個聲音的處理器，有三個屬性，依序為bufferSize、numberOfInputChannels和numberOfOutputChannels
+			audioCtx.connect(gainNode);
+			
+			var stereoPanner=context.createStereoPanner();
+			stereoPanner.pan.value=0;//默认左右声道没有偏移
+			gainNode.connect(stereoPanner);//链接这一个参数
+		})
+		
+	</script>
+</html>

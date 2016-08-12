@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			.button{
+				display: inline-block;
+				width: 150px;
+				height: 50px;
+				line-height: 50px;
+				text-decoration: none;
+				background: #333300;
+				color: #FFFFFF;
+				font-size: 25px;
+				text-align: center;
+			}
+			.current{
+				outline: 3px solid gold;
+			}
+			.box{
+				margin: 10px 0;
+			}
+			#pan{
+				width: 200px;
+			}
+			.prompt{
+				font-size: 20px;
+				vertical-align: text-bottom;
+			}
+			.num{
+				font-size: 20px;
+				vertical-align: text-bottom;
+			}
+		</style>
+	</head>
+	<body>
+		<a href="javascript:;" class="button play">播放</a>
+		<a href="javascript:;" class="button stop current">停止</a><br>
+		<div class="box">
+			<span class="prompt">左右声道控制</span>
+			<input type="range" name="pan" id="pan" value="0" step="0.1" min="-1" max="1"/>
+			<span class="num"></span>
+		</div>
+	</body>
+	<script src="js/jquery-1.10.2.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		//注明，音频属性是createOscillator，之后我们会为了增加音频效果，而附加许多其他属性，例如音量大小-createGain
+		//或者左右声道-createStereoPanner，在我们创建了这些附加属性之后，音频想要拥有这些属性，就必须connect（链接）这些属性
+		//播放音频时，则这些属性依次connect(context.destination)即可，停止播放时，则依次disconnect(context.destination)；
+		$(".button").click(function(){
+			$(".button").removeClass("current");
+			$(this).addClass("current");
+		})
+		
+		$(".play").click(function(){
+			gainNode.connect(context.destination);
+			stereoPanner.connect(context.destination);
+		})
+		
+		$(".stop").click(function(){
+			gainNode.disconnect(context.destination);
+			stereoPanner.disconnect(context.destination);
+			
+		})
+		$(function(){
+			var num=$("#pan").val();
+			$(".num").html(num);
+			
+			$("#pan").on("input",function(){
+				var num=$("#pan").val();
+				$(".num").html(num);
+				stereoPanner.pan.value=num;
+			})
+		})
+		
+		//音频创建
+		var AudioContext=AudioContext||webkitAudioContext;
+		var context=new AudioContext;
+		var oscillator=context.createOscillator();//创建音频
+		oscillator.frequency.value=440;
+		oscillator.detune.value=440;
+		oscillator.type="sine";
+		
+		//音量控制
+		var gainNode=context.createGain();
+		gainNode.gain.value=1;
+		oscillator.connect(gainNode)
+		
+		//左右声道控制
+		var stereoPanner=context.createStereoPanner();
+		stereoPanner.pan.value=0;//默认左右声道没有偏移
+		oscillator.connect(stereoPanner);//链接这一个参数
+		
+		oscillator.start(0);
+		
+		//播放
+		//gainNode.connect(context.destination);
+		//oscillator.connect(context.destination);
+	</script>
+</html>
